@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Medical AI | 场景驱动的医疗大模型实践</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- 顶尖学术/科技感配色系统 --- */
+        :root {
+            --bg-color: #0b0f19;
+            /* 深邃科技底色 */
+            --card-bg: rgba(22, 28, 45, 0.6);
+            /* 半透明流光卡片背景 */
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            /* 纯净高亮文本 */
+            --text-secondary: #9ca3af;
+            /* 细腻过渡文本 */
+
+            /* 医疗AI核心渐变色 */
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
+            --accent-blue: #60a5fa;
+            --accent-green: #34d399;
+        }
+
+        /* --- 全局底层渲染优化 --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.7;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* 背景微弱粒子光晕效果 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        /* --- Header 渲染 --- */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .badge-top {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #ffffff, #9ca3af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        .lead-text {
+            margin-top: 3rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .lead-text strong {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- 结构模块排版 --- */
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-top: 4.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h2::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: var(--primary-gradient);
+            margin-right: 1rem;
+            border-radius: 2px;
+        }
+
+        /* --- 科技感核心金字塔图片组件渲染 --- */
+        .img-wrapper {
+            position: relative;
+            margin: 2.5rem 0;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .fancy-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 12px;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* 悬停时带有微弱且克制的发光特效 */
+        .img-wrapper:hover .fancy-img {
+            transform: scale(1.005);
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.15);
+        }
+
+        /* --- 列表与卡片交互 --- */
+        .logic-step {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .logic-step:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(22, 28, 45, 0.8);
+        }
+
+        .step-num {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-right: 1.5rem;
+        }
+
+        .step-content strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .media-box {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            margin: 2rem 0;
+            font-size: 0.9rem;
+        }
+
+        /* --- 导航表格 --- */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.2rem 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            color: var(--text-primary);
+        }
+
+        table a {
+            color: #ffffff;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.3);
+            padding-bottom: 2px;
+            transition: color 0.2s;
+        }
+
+        table a:hover {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .badge-status {
+            display: inline-flex;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 99px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .resource-list li,
+        .contrib-list li {
+            position: relative;
+            padding-left: 1.8rem;
+            margin-bottom: 1.2rem;
+            color: var(--text-secondary);
+            list-style: none;
+        }
+
+        .resource-list li::before,
+        .contrib-list li::before {
+            content: "";
+            position: absolute;
+            left: 0.3rem;
+            top: 0.65rem;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .resource-list li strong {
+            color: var(--text-primary);
+        }
+
+        .license-card {
+            margin-top: 6rem;
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, rgba(0, 0, 0, 0) 100%);
+            border-left: 4px solid #ef4444;
+            padding: 1.5rem 2rem;
+            border-radius: 0 16px 16px 0;
+        }
+
+        .license-card strong {
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .license-card p {
+            color: #f3f4f6;
+            margin-top: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header>
+            <span class="badge-top">Open-Source Medical AI Framework</span>
+            <h1>Happy Medical AI</h1>
+            <div class="subtitle">以大语言模型为框架，以医疗场景为引入，从实践案例到技术讲解。</div>
+
+            <div class="lead-text">
+                本项目通过 <strong>“场景驱动 + 技术解析”</strong> 的方式，帮助医学学习者和实践者理解并掌握 AI 在医疗中的落地应用。
+            </div>
+        </header>
+
+        <h2>🌟 项目逻辑</h2>
+        <div class="logic-board">
+            <div class="logic-step">
+                <div class="step-num">01</div>
+                <div class="step-content">
+                    <strong>从实践案例出发</strong>
+                    <p>真实医疗场景（如病例分析、临床决策、随访管理）。</p>
+                </div>
+            </div>
+            <div class="logic-step">
+                <div class="step-num">02</div>
+                <div class="step-content">
+                    <strong>场景映射模型层级</strong>
+                    <p>对应通用 → 医疗 → 专科 → 专病大语言模型体系。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="img-wrapper">
+            <img class="fancy-img" src="medicalai.png" alt="医疗大模型三层级架构金字塔">
+        </div>
+
+        <h2>📂 项目面向对象</h2>
+        <div class="img-wrapper">
+            <img class="fancy-img" src="medical contributors.png" alt="医疗大模型项目面向对象示意图">
+        </div>
+
+        <h2>📂 配套资源</h2>
+        <ul class="resource-list">
+            <li><strong>实际案例</strong>：临床脱敏病历 / 影像 / 随访数据</li>
+            <li><strong>训练案例</strong>：可复现的输入输出模板</li>
+            <li><strong>讲解视频</strong>：每场景 10-15 分钟操作演示
+                <span style="color: var(--text-secondary); font-size: 0.85rem; margin-left: 0.5rem;">(TODO)</span>
+            </li>
+            <li><strong>应用反馈</strong>：来自医生、医学生、医学科研人员、医院管理工作者、患者等用户的使用心得和改进意见</li>
+        </ul>
+
+        <h2>📖 项目导航索引</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">章节名称</th>
+                        <th style="width: 50%;">核心关键内容</th>
+                        <th style="width: 15%;">当前状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="./docs/chap1.md">第一章 AI赋能医疗：应用概览与模型区分</a></td>
+                        <td>介绍AI在影像分析、智能问诊等医疗场景的具体应用，对比通用、医疗、专科三类大模型的“本领”与适用场景，搭建知识框架</td>
+                        <td><span class="badge-status">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./docs/chap2.md">第二章 通用大模型的医疗普适性：提示词工程实践</a></td>
+                        <td>结合骨科手术、糖尿病管理等真实场景，讲解如何用提示词工程引导通用大模型辅助医疗工作，让“通用智能”更好服务临床</td>
+                        <td><span class="badge-status">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./docs/chap3.md">第三章 通用医疗大模型：全能医疗助手的功能与实践</a></td>
+                        <td>解析HuatuoGPT等“全科助手”模型，说明其在慢性病管理、智能分诊、医疗知识问答等方面的作用，介绍双轨训练等核心技术，以及医院落地案例</td>
+                        <td><span class="badge-status">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./docs/chap4.md">第四章 专科医疗大模型：专科诊疗的智能辅助</a></td>
+                        <td>聚焦“专科副手”模型，如XrayGPT（胸片分析）、OncoGPT（肿瘤诊疗）等，讲解其在放射科、肿瘤科等专科的具体应用，以及视觉-语言对齐等关键技术</td>
+                        <td><span class="badge-status">Active</span></td>
+                    </tr>
+                    <tr>
+                        <td><a href="./docs/final.md">终章 医疗大模型临床落地：案例、挑战与未来</a></td>
+                        <td>分享国内医院的真实应用案例，拆解大模型临床实践全流程，分析可解释性、可靠性等现存问题，展望未来发展方向</td>
+                        <td><span class="badge-status">Active</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2>🚀 学习方式</h2>
+        <div class="logic-board">
+            <div class="logic-step">
+                <div class="step-num">Step 1</div>
+                <div class="step-content"><strong>从案例入手</strong> → 先看真实场景</div>
+            </div>
+            <div class="logic-step">
+                <div class="step-num">Step 2</div>
+                <div class="step-content"><strong>对照模型分类</strong> → 找到合适的模型类型</div>
+            </div>
+            <div class="logic-step">
+                <div class="step-num">Step 3</div>
+                <div class="step-content"><strong>进入技术讲解</strong> → 学习 Prompt/调用/微调方法</div>
+            </div>
+            <div class="logic-step">
+                <div class="step-num">Step 4</div>
+                <div class="step-content"><strong>完成实操训练</strong> → 在临床或科研中应用</div>
+            </div>
+            <div class="logic-step">
+                <div class="step-num">Step 5</div>
+                <div class="step-content"><strong>分享反馈与优化</strong> → 与社区共建</div>
+            </div>
+        </div>
+
+        <h2>🤝 贡献方式</h2>
+        <ul class="contrib-list">
+            <li>新的医疗场景案例与训练数据</li>
+            <li>不同类型大语言模型的应用经验</li>
+            <li>教程改进与工具优化</li>
+        </ul>
+
+        <div class="license-card">
+            <strong>📜 ACADEMIC LICENSE & DISCLAIMER</strong>
+            <p>本项目适用于 <strong>医学学习与科研</strong>，不替代临床诊断与治疗。</p>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
